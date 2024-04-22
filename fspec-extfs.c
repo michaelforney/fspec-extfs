@@ -100,7 +100,7 @@ main(int argc, char **argv)
 
 	do {
 		ext2_ino_t dir, ino;
-		char name[NAME_MAX], link[PATH_MAX], source[PATH_MAX], *end;
+		char name[NAME_MAX], target[PATH_MAX], source[PATH_MAX], *end;
 		mode_t mode = 0;
 		int fd = -1;
 
@@ -128,11 +128,11 @@ main(int argc, char **argv)
 			} else if (strncmp(line, "gid=", 4) == 0) {
 			} else if (strncmp(line, "perm=", 5) == 0) {
 				mode |= strtol(line + 5, NULL, 8);
-			} else if (strncmp(line, "type=", 5) == 0) {
+			} else if (strncmp(line, "mode=", 5) == 0) {
 				mode |= filetype(line + 5);
-			} else if (strncmp(line, "link=", 5) == 0) {
-				if (!memccpy(link, line + 5, '\0', sizeof(link)))
-					fatal("link too long");
+			} else if (strncmp(line, "target=", 7) == 0) {
+				if (!memccpy(target, line + 7, '\0', sizeof(target)))
+					fatal("target too long");
 			} else if (strncmp(line, "source=", 7) == 0) {
 				if (!memccpy(source, line + 7, '\0', sizeof(source)))
 					fatal("source too long");
@@ -174,7 +174,7 @@ main(int argc, char **argv)
 				fatal("ext2fs_mkdir: %s", error_message(err));
 			break;
 		case S_IFLNK:
-			err = ext2fs_symlink(fs, dir, ino, name, link);
+			err = ext2fs_symlink(fs, dir, ino, name, target);
 			if (err)
 				fatal("ext2fs_symlink: %s", error_message(err));
 			break;
